@@ -1,0 +1,5 @@
+Pups: 2, Wolves: 0
+Total configs: 4
+Unique configs: 3
+Step 0: (BOAT) left=[2, 0], right=[0, 0]
+Step 1:        left=[0, 0], right=[2, 0]  (BOAT)

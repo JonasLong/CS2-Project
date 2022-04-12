@@ -1,0 +1,15 @@
+Pups: 3, Wolves: 2
+Total configs: 42
+Unique configs: 20
+Step 0: (BOAT) left=[3, 2], right=[0, 0]
+Step 1:        left=[1, 2], right=[2, 0]  (BOAT)
+Step 2: (BOAT) left=[2, 2], right=[1, 0]
+Step 3:        left=[0, 2], right=[3, 0]  (BOAT)
+Step 4: (BOAT) left=[1, 2], right=[2, 0]
+Step 5:        left=[1, 1], right=[2, 1]  (BOAT)
+Step 6: (BOAT) left=[2, 1], right=[1, 1]
+Step 7:        left=[0, 1], right=[3, 1]  (BOAT)
+Step 8: (BOAT) left=[1, 1], right=[2, 1]
+Step 9:        left=[1, 0], right=[2, 2]  (BOAT)
+Step 10: (BOAT) left=[2, 0], right=[1, 2]
+Step 11:        left=[0, 0], right=[3, 2]  (BOAT)

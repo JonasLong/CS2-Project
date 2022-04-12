@@ -1,0 +1,37 @@
+Pups: 8, Wolves: 5
+Total configs: 266
+Unique configs: 104
+Step 0: (BOAT) left=[8, 5], right=[0, 0]
+Step 1:        left=[6, 5], right=[2, 0]  (BOAT)
+Step 2: (BOAT) left=[7, 5], right=[1, 0]
+Step 3:        left=[5, 5], right=[3, 0]  (BOAT)
+Step 4: (BOAT) left=[6, 5], right=[2, 0]
+Step 5:        left=[4, 5], right=[4, 0]  (BOAT)
+Step 6: (BOAT) left=[5, 5], right=[3, 0]
+Step 7:        left=[3, 5], right=[5, 0]  (BOAT)
+Step 8: (BOAT) left=[4, 5], right=[4, 0]
+Step 9:        left=[2, 5], right=[6, 0]  (BOAT)
+Step 10: (BOAT) left=[3, 5], right=[5, 0]
+Step 11:        left=[1, 5], right=[7, 0]  (BOAT)
+Step 12: (BOAT) left=[2, 5], right=[6, 0]
+Step 13:        left=[0, 5], right=[8, 0]  (BOAT)
+Step 14: (BOAT) left=[1, 5], right=[7, 0]
+Step 15:        left=[1, 4], right=[7, 1]  (BOAT)
+Step 16: (BOAT) left=[2, 4], right=[6, 1]
+Step 17:        left=[0, 4], right=[8, 1]  (BOAT)
+Step 18: (BOAT) left=[1, 4], right=[7, 1]
+Step 19:        left=[1, 3], right=[7, 2]  (BOAT)
+Step 20: (BOAT) left=[2, 3], right=[6, 2]
+Step 21:        left=[0, 3], right=[8, 2]  (BOAT)
+Step 22: (BOAT) left=[1, 3], right=[7, 2]
+Step 23:        left=[1, 2], right=[7, 3]  (BOAT)
+Step 24: (BOAT) left=[2, 2], right=[6, 3]
+Step 25:        left=[0, 2], right=[8, 3]  (BOAT)
+Step 26: (BOAT) left=[1, 2], right=[7, 3]
+Step 27:        left=[1, 1], right=[7, 4]  (BOAT)
+Step 28: (BOAT) left=[2, 1], right=[6, 4]
+Step 29:        left=[0, 1], right=[8, 4]  (BOAT)
+Step 30: (BOAT) left=[1, 1], right=[7, 4]
+Step 31:        left=[1, 0], right=[7, 5]  (BOAT)
+Step 32: (BOAT) left=[2, 0], right=[6, 5]
+Step 33:        left=[0, 0], right=[8, 5]  (BOAT)

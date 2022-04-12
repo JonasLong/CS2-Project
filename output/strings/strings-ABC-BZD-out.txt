@@ -1,0 +1,8 @@
+Start: ABC, End: BZD
+Total configs: 649
+Unique configs: 203
+Step 0: ABC
+Step 1: BBC
+Step 2: BAC
+Step 3: BAD
+Step 4: BZD
