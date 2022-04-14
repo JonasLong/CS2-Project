@@ -1,9 +1,6 @@
 package puzzles.common.solver;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Solver {
     /**
@@ -23,10 +20,9 @@ public class Solver {
     /**
      * finds the shortest path with BFS
      * @param config the starting configuration
-     * @param finalConfig the goal configuration
      * @return the path in the form of a linked list of configs
      */
-    public List<Configuration> findPath(Configuration config, Configuration finalConfig){
+    public List<Configuration> findPath(Configuration config){
         List<Configuration> queue = new LinkedList<>();
         queue.add(config);
 
@@ -36,7 +32,7 @@ public class Solver {
         while (!queue.isEmpty()) {
             Configuration current = queue.remove(0);
             if (current.isSolution()) {
-                break;
+                return constructPath(predecessors, config, current);
             }
             for (Configuration nbr : current.getNeighbors()) {
                 configsGenerated++;
@@ -47,8 +43,7 @@ public class Solver {
                 }
             }
         }
-
-        return constructPath(predecessors, config, finalConfig);
+        return new ArrayList<>();
     }
 
     /**

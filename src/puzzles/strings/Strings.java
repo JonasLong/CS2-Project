@@ -12,9 +12,8 @@ public class Strings {
         } else {
             System.out.println("Start: " + args[0] + ", End: " + args[1]);
             Configuration startConfig = new StringsConfig(args[1], args[0]);
-            Configuration endConfig = new StringsConfig(args[1], args[1]);
             Solver solv = new Solver();
-            LinkedList<Configuration> path = (LinkedList<Configuration>) solv.findPath(startConfig, endConfig);
+            LinkedList<Configuration> path = (LinkedList<Configuration>) solv.findPath(startConfig);
             System.out.println("Total configs: " + solv.getConfigsGenerated());
             System.out.println("Unique configs: " + solv.getUniqueConfigs());
             if (path.size() == 0){

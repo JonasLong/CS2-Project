@@ -13,9 +13,8 @@ public class Crossing {
         } else {
             System.out.println("Pups: " + args[0] + ", Wolves: " + args[1]);
             Configuration startConfig = new CrossingConfig(Integer.parseInt(args[0]), Integer.parseInt(args[1]), 0, 0, true);
-            Configuration endConfig = new CrossingConfig(0, 0, Integer.parseInt(args[0]), Integer.parseInt(args[1]), false);
             Solver solv = new Solver();
-            LinkedList<Configuration> path = (LinkedList<Configuration>) solv.findPath(startConfig, endConfig);
+            LinkedList<Configuration> path = (LinkedList<Configuration>) solv.findPath(startConfig);
             System.out.println("Total configs: " + solv.getConfigsGenerated());
             System.out.println("Unique configs: " + solv.getUniqueConfigs());
             if (path.size() == 0){
