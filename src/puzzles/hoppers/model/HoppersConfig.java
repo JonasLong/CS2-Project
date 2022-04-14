@@ -3,7 +3,6 @@ package puzzles.hoppers.model;
 import puzzles.common.solver.Configuration;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,7 +11,7 @@ import java.util.Collection;
 
 public class HoppersConfig implements Configuration {
 
-    private cellContents[][] grid;
+    private final cellContents[][] grid;
     private static int ROWS;
     private static int COLS;
 
@@ -58,11 +57,6 @@ public class HoppersConfig implements Configuration {
 
     /**
      *
-     * @param curRow
-     * @param curCol
-     * @param rowOffset
-     * @param colOffset
-     * @param configurations
      * @rit.pre curRow and curCol point to a cell within bounds containing a green or red frog
      */
     private void generateConfig(int curRow, int curCol, int rowOffset, int colOffset, ArrayList<Configuration> configurations) {
@@ -115,7 +109,7 @@ public class HoppersConfig implements Configuration {
         return row % 2 == 0;
     }
 
-    /*public HoppersConfig(String filename) throws IOException {
+    public HoppersConfig(String filename) throws IOException {
 
         BufferedReader reader = new BufferedReader(new FileReader(filename));
 
@@ -126,15 +120,21 @@ public class HoppersConfig implements Configuration {
         grid = getEmptyGrid();
 
         for (int rowNum = 0; rowNum < ROWS; rowNum++) {
-            String[] rowStr=reader.readLine().split(SEPARATOR);
+            String[] colStr=reader.readLine().split(SEPARATOR);
             for (int colNum = 0; colNum < COLS; colNum++) {
-
+                char cellChar=colStr[rowNum].charAt(0);
+                cellContents curCell;
+                switch (cellChar){
+                    case EMPTY_CHAR -> curCell=cellContents.EMPTY;
+                    case RED_CHAR -> curCell=cellContents.RED;
+                    case GREEN_CHAR -> curCell=cellContents.GREEN;
+                    case INVALID_CHAR -> curCell=cellContents.INVALID;
+                    default -> curCell=null;
+                }
+                grid[rowNum][colNum]=curCell;
             }
         }
-
-        //read from a file
-
-    }*/
+    }
 
     private cellContents[][] getEmptyGrid(){
         return new cellContents[ROWS][COLS];
