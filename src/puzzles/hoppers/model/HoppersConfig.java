@@ -11,9 +11,9 @@ import java.util.Collection;
 
 public class HoppersConfig implements Configuration {
 
-    private final cellContents[][] grid;
-    private static int ROWS;
-    private static int COLS;
+    private cellContents[][] grid;
+    private static int ROWS=0;
+    private static int COLS=0;
 
     public static final char EMPTY_CHAR='G';
     public static final char GREEN_CHAR='R';
@@ -109,30 +109,33 @@ public class HoppersConfig implements Configuration {
         return row % 2 == 0;
     }
 
-    public HoppersConfig(String filename) throws IOException {
+    public HoppersConfig(String filename) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(filename));
 
-        BufferedReader reader = new BufferedReader(new FileReader(filename));
+            String[] size = reader.readLine().split(SEPARATOR);
+            ROWS = Integer.parseInt(size[0]);
+            COLS = Integer.parseInt(size[1]);
+            grid = getEmptyGrid();
 
-        String[] size= reader.readLine().split(SEPARATOR);
-        ROWS = Integer.parseInt(size[0]);
-        COLS = Integer.parseInt(size[1]);
-
-        grid = getEmptyGrid();
-
-        for (int rowNum = 0; rowNum < ROWS; rowNum++) {
-            String[] colStr=reader.readLine().split(SEPARATOR);
-            for (int colNum = 0; colNum < COLS; colNum++) {
-                char cellChar=colStr[rowNum].charAt(0);
-                cellContents curCell;
-                switch (cellChar){
-                    case EMPTY_CHAR -> curCell=cellContents.EMPTY;
-                    case RED_CHAR -> curCell=cellContents.RED;
-                    case GREEN_CHAR -> curCell=cellContents.GREEN;
-                    case INVALID_CHAR -> curCell=cellContents.INVALID;
-                    default -> curCell=null;
+            for (int rowNum = 0; rowNum < ROWS; rowNum++) {
+                String[] colStr = reader.readLine().split(SEPARATOR);
+                for (int colNum = 0; colNum < COLS; colNum++) {
+                    char cellChar = colStr[rowNum].charAt(0);
+                    cellContents curCell;
+                    switch (cellChar) {
+                        case EMPTY_CHAR -> curCell = cellContents.EMPTY;
+                        case RED_CHAR -> curCell = cellContents.RED;
+                        case GREEN_CHAR -> curCell = cellContents.GREEN;
+                        case INVALID_CHAR -> curCell = cellContents.INVALID;
+                        default -> curCell = null;
+                    }
+                    grid[rowNum][colNum] = curCell;
                 }
-                grid[rowNum][colNum]=curCell;
             }
+        } catch (IOException e){
+            e.printStackTrace();
+            grid=getEmptyGrid();
         }
     }
 

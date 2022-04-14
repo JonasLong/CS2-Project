@@ -19,15 +19,7 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
         if (args.length != 1) {
             System.out.println("Usage: java HoppersPTUI filename");
         } else {
-            String fname=args[0];
-            System.out.println("File: "+fname);
-            try {
-                Configuration c = new HoppersConfig(fname);
-                Solver s = new Solver();
-                s.findPath(c);
-            } catch (IOException e){
-                e.printStackTrace();
-            }
+
         }
     }
 }
