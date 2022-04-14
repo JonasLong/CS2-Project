@@ -62,11 +62,19 @@ public class JamConfig implements Configuration{
             if (numCols >= 0) System.arraycopy(other.mainGrid[i], 0, this.mainGrid[i], 0, numCols);
         }
         this.carList.putAll(other.carList);
-
+        Car car = carList.get(name);
         if (forward){
+            if (car.movesHorizontal()){
 
+            } else {
+
+            }
         } else {
+            if (car.movesHorizontal()){
 
+            } else {
+
+            }
         }
     }
 
