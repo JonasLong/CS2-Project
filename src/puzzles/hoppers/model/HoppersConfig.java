@@ -15,11 +15,12 @@ public class HoppersConfig implements Configuration {
     private static int ROWS=0;
     private static int COLS=0;
 
-    public static final char EMPTY_CHAR='G';
-    public static final char GREEN_CHAR='R';
-    public static final char RED_CHAR='.';
+    public static final char EMPTY_CHAR='.';
+    public static final char GREEN_CHAR='G';
+    public static final char RED_CHAR='R';
     public static final char INVALID_CHAR='*';
     public static final String SEPARATOR=" ";
+    public static final String NEWLINE="\n";
 
     public enum cellContents {
         EMPTY, GREEN, RED, INVALID
@@ -52,7 +53,7 @@ public class HoppersConfig implements Configuration {
             }
         }
 
-        return null;
+        return neighbors;
     }
 
     /**
@@ -121,7 +122,7 @@ public class HoppersConfig implements Configuration {
             for (int rowNum = 0; rowNum < ROWS; rowNum++) {
                 String[] colStr = reader.readLine().split(SEPARATOR);
                 for (int colNum = 0; colNum < COLS; colNum++) {
-                    char cellChar = colStr[rowNum].charAt(0);
+                    char cellChar = colStr[colNum].charAt(0);
                     cellContents curCell;
                     switch (cellChar) {
                         case EMPTY_CHAR -> curCell = cellContents.EMPTY;
@@ -158,4 +159,28 @@ public class HoppersConfig implements Configuration {
         }
         return true;
     }
+
+    @Override
+    public String toString(){
+        StringBuilder out= new StringBuilder();
+        for (int rowNum = 0; rowNum < ROWS; rowNum++) {
+            for (int colNum = 0; colNum < COLS; colNum++) {
+                cellContents cell=grid[rowNum][colNum];
+                switch (cell){
+                    case EMPTY -> out.append(EMPTY_CHAR);
+                    case GREEN -> out.append(GREEN_CHAR);
+                    case RED -> out.append(RED_CHAR);
+                    case INVALID -> out.append(INVALID_CHAR);
+                }
+                if(colNum!=COLS-1){
+                    out.append(SEPARATOR);
+                }
+            }
+            if(rowNum!=ROWS-1){
+                out.append(NEWLINE);
+            }
+        }
+        return out.toString();
+    }
+
 }

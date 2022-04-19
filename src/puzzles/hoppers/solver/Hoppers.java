@@ -4,6 +4,9 @@ import puzzles.common.solver.Configuration;
 import puzzles.common.solver.Solver;
 import puzzles.hoppers.model.HoppersConfig;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class Hoppers {
     public static void main(String[] args) {
         if (args.length != 1) {
@@ -11,9 +14,16 @@ public class Hoppers {
         } else {
             String fname=args[0];
             System.out.println("File: "+fname);
-            Configuration c = new HoppersConfig(fname);
+            HoppersConfig c = new HoppersConfig(fname);
             Solver s = new Solver();
-            s.findPath(c);
+            List<Configuration> solution=(LinkedList<Configuration>) s.findPath(c);
+            if(solution.size()==0){
+                System.out.println("No solution.");
+            } else {
+                for (Configuration pathItem : solution) {
+                    System.out.println(pathItem);
+                }
+            }
         }
     }
 }
