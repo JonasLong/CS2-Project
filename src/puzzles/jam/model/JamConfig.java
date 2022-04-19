@@ -5,11 +5,9 @@ import puzzles.common.solver.Configuration;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
-
-// TODO: implement your JamConfig for the common solver
 
 public class JamConfig implements Configuration{
 
@@ -33,12 +31,12 @@ public class JamConfig implements Configuration{
             int numCars = Integer.parseInt(br.readLine());
             for (int i = 0; i < numCars; i++) {
                 line = br.readLine().split(" ");
+                Character name = line[0].charAt(0);
                 int startRow = Integer.parseInt(line[1]);
                 int startCol = Integer.parseInt(line[2]);
                 int endRow = Integer.parseInt(line[3]);
                 int endCol = Integer.parseInt(line[4]);
-                Car car = new Car(startRow, startCol, endRow, endCol);
-                Character name = line[0].charAt(0);
+                Car car = new Car(startRow, startCol, endRow, endCol, name);
                 carList.put(name, car);
                 if (car.movesHorizontal()){
                     for (int j = startCol; j < endCol; j++) {
@@ -63,17 +61,31 @@ public class JamConfig implements Configuration{
         }
         this.carList.putAll(other.carList);
         Car car = carList.get(name);
+        moveCar(car, forward);
+    }
+
+    public void moveCar(Car car, boolean forward){
         if (forward){
+            mainGrid[car.getStartRow()][car.getStartCol()] = '.';
             if (car.movesHorizontal()){
-
+                mainGrid[car.getStartRow()][(car.getEndCol() + 1)] = car.getName();
+                car.setStartCol((car.getStartCol() + 1));
+                car.setEndCol((car.getEndCol() + 1));
             } else {
-
+                mainGrid[(car.getEndRow() + 1)][car.getEndCol()] = car.getName();
+                car.setStartRow((car.getStartRow() + 1));
+                car.setEndRow((car.getEndRow() + 1));
             }
         } else {
+            mainGrid[car.getEndRow()][car.getEndCol()] = '.';
             if (car.movesHorizontal()){
-
+                mainGrid[car.getStartRow()][(car.getStartCol() - 1)] = car.getName();
+                car.setStartCol((car.getStartCol() - 1));
+                car.setEndCol((car.getEndCol() - 1));
             } else {
-
+                mainGrid[(car.getStartRow() - 1)][car.getEndCol()] = car.getName();
+                car.setStartRow((car.getStartRow() - 1));
+                car.setEndRow((car.getEndRow() - 1));
             }
         }
     }
@@ -85,6 +97,34 @@ public class JamConfig implements Configuration{
 
     @Override
     public Collection<Configuration> getNeighbors() {
-        return null;
+        ArrayList<Configuration> nbr = new ArrayList<>();
+        for (int i = 0; i < numRows; i++) {
+            for (int j = 0; j < numCols; j++) {
+                Character cur = mainGrid[i][j];
+                if (cur.equals('.')){
+                    if (i > 0){
+                        addConfig(nbr, (i - 1), j, (false));
+                    }
+                    if (i < (numRows - 1)){
+                        addConfig(nbr, (i + 1), j, (true));
+                    }
+                    if (j > 0){
+                        addConfig(nbr, i, (j - 1), (false));
+                    }
+                    if (j < (numCols - 1)){
+                        addConfig(nbr, i, (j + 1), (true));
+                    }
+                }
+            }
+        }
+        return nbr;
+    }
+
+    public void addConfig(ArrayList<Configuration> list, int row, int col, boolean forward) {
+        if (!mainGrid[row][col].equals('.')){
+            list.add(new JamConfig((this), mainGrid[row][col], forward));
+        }
     }
 }
+
+

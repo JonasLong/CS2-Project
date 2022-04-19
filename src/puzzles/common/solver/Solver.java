@@ -43,7 +43,7 @@ public class Solver {
                 }
             }
         }
-        return new ArrayList<>();
+        return new LinkedList<>();
     }
 
     /**

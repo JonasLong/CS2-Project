@@ -6,12 +6,14 @@ public class Car {
     private int startCol;
     private int endRow;
     private int endCol;
+    private Character name;
 
-    public Car(int startCol, int startRow, int endCol, int endRow){
+    public Car(int startCol, int startRow, int endCol, int endRow, Character name){
         this.startCol = startCol;
         this.startRow = startRow;
         this.endRow = endRow;
         this.endCol = endCol;
+        this.name = name;
         if (this.startRow == this.endRow){
             this.movesHorizontal = true;
         } else {
@@ -53,5 +55,13 @@ public class Car {
 
     public int getStartRow() {
         return startRow;
+    }
+
+    public Character getName() {
+        return name;
+    }
+
+    public void setName(Character name) {
+        this.name = name;
     }
 }
