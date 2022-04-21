@@ -8,7 +8,7 @@ public class Car {
     private int endCol;
     private Character name;
 
-    public Car(int startCol, int startRow, int endCol, int endRow, Character name){
+    public Car(int startRow, int startCol, int endRow, int endCol, Character name){
         this.startCol = startCol;
         this.startRow = startRow;
         this.endRow = endRow;

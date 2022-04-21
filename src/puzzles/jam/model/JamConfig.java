@@ -39,12 +39,14 @@ public class JamConfig implements Configuration{
                 Car car = new Car(startRow, startCol, endRow, endCol, name);
                 carList.put(name, car);
                 if (car.movesHorizontal()){
-                    for (int j = startCol; j < endCol; j++) {
+                    for (int j = startCol; j < (endCol + 1); j++) {
                         mainGrid[startRow][j] = name;
+                        System.out.println(this);
                     }
                 } else {
-                    for (int j = startRow; j < endRow; j++) {
+                    for (int j = startRow; j < (endRow + 1); j++) {
                         mainGrid[j][startCol] = name;
+                        System.out.println(this);
                     }
                 }
             }
@@ -60,7 +62,7 @@ public class JamConfig implements Configuration{
             if (numCols >= 0) System.arraycopy(other.mainGrid[i], 0, this.mainGrid[i], 0, numCols);
         }
         this.carList.putAll(other.carList);
-        Car car = carList.get(name);
+        Car car = this.carList.get(name);
         moveCar(car, forward);
     }
 
@@ -68,7 +70,7 @@ public class JamConfig implements Configuration{
         if (forward){
             mainGrid[car.getStartRow()][car.getStartCol()] = '.';
             if (car.movesHorizontal()){
-                mainGrid[car.getStartRow()][(car.getEndCol() + 1)] = car.getName();
+                mainGrid[car.getEndRow()][(car.getEndCol() + 1)] = car.getName();
                 car.setStartCol((car.getStartCol() + 1));
                 car.setEndCol((car.getEndCol() + 1));
             } else {
@@ -103,16 +105,16 @@ public class JamConfig implements Configuration{
                 Character cur = mainGrid[i][j];
                 if (cur.equals('.')){
                     if (i > 0){
-                        addConfig(nbr, (i - 1), j, (false));
+                        addConfig(nbr, (i - 1), j, (true), false);
                     }
                     if (i < (numRows - 1)){
-                        addConfig(nbr, (i + 1), j, (true));
+                        addConfig(nbr, (i + 1), j, (false), false);
                     }
                     if (j > 0){
-                        addConfig(nbr, i, (j - 1), (false));
+                        addConfig(nbr, i, (j - 1), (true), true);
                     }
                     if (j < (numCols - 1)){
-                        addConfig(nbr, i, (j + 1), (true));
+                        addConfig(nbr, i, (j + 1), (false), true);
                     }
                 }
             }
@@ -120,10 +122,21 @@ public class JamConfig implements Configuration{
         return nbr;
     }
 
-    public void addConfig(ArrayList<Configuration> list, int row, int col, boolean forward) {
-        if (!mainGrid[row][col].equals('.')){
+    public void addConfig(ArrayList<Configuration> list, int row, int col, boolean forward, boolean horiz) {
+        if (!mainGrid[row][col].equals('.') && (carList.get(mainGrid[row][col]).movesHorizontal() == horiz)){
             list.add(new JamConfig((this), mainGrid[row][col], forward));
         }
+    }
+
+    public String toString(){
+        StringBuilder string = new StringBuilder();
+        for (int i = 0; i < numRows; i++) {
+            for (int j = 0; j < numCols; j++) {
+                string.append(mainGrid[i][j]).append(" ");
+            }
+            string.append("\n");
+        }
+        return string.toString();
     }
 }
 
