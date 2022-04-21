@@ -14,10 +14,11 @@ import java.util.Random;
 public class HoppersConfig implements Configuration {
 
     private cellContents[][] grid;
-    private static int ROWS = 0;
-    private static int COLS = 0;
     //Table of random ints for Zobrist hashing
     private static int[][][] zobristTable;
+
+    public static int ROWS = 0;
+    public static int COLS = 0;
 
     public static final char EMPTY_CHAR = '.';
     public static final char GREEN_CHAR = 'G';

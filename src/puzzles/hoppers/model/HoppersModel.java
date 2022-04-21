@@ -31,4 +31,13 @@ public class HoppersModel {
             observer.update(this, msg);
         }
     }
+
+    public void updateConfig(HoppersConfig config){
+        currentConfig=config;
+        alertObservers("");
+    }
+
+    public HoppersConfig getConfig(){
+        return currentConfig;
+    }
 }
