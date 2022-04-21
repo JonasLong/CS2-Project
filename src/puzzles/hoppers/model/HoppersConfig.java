@@ -26,43 +26,37 @@ public class HoppersConfig implements Configuration {
     public static final char INVALID_CHAR = '*';
     public static final String SEPARATOR = " ";
     public static final String NEWLINE = "\n";
-    public static final int JUMP_SIZE=1;
-    public static final int JUMP_MULTIPLIER=2;
+    public static final int JUMP_SIZE = 1;
+    public static final int JUMP_MULTIPLIER = 2;
 
     public enum cellContents {
         EMPTY, GREEN, RED, INVALID
     }
 
-    public HoppersConfig(String filename) {
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(filename));
+    public HoppersConfig(String filename) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(filename));
 
-            String[] size = reader.readLine().split(SEPARATOR);
-            ROWS = Integer.parseInt(size[0]);
-            COLS = Integer.parseInt(size[1]);
-            grid = getEmptyGrid();
+        String[] size = reader.readLine().split(SEPARATOR);
+        ROWS = Integer.parseInt(size[0]);
+        COLS = Integer.parseInt(size[1]);
+        grid = getEmptyGrid();
 
-            for (int rowNum = 0; rowNum < ROWS; rowNum++) {
-                String[] colStr = reader.readLine().split(SEPARATOR);
-                for (int colNum = 0; colNum < COLS; colNum++) {
-                    char cellChar = colStr[colNum].charAt(0);
-                    cellContents curCell;
-                    switch (cellChar) {
-                        case EMPTY_CHAR -> curCell = cellContents.EMPTY;
-                        case RED_CHAR -> curCell = cellContents.RED;
-                        case GREEN_CHAR -> curCell = cellContents.GREEN;
-                        case INVALID_CHAR -> curCell = cellContents.INVALID;
-                        default -> curCell = null;
-                    }
-                    grid[rowNum][colNum] = curCell;
+        for (int rowNum = 0; rowNum < ROWS; rowNum++) {
+            String[] colStr = reader.readLine().split(SEPARATOR);
+            for (int colNum = 0; colNum < COLS; colNum++) {
+                char cellChar = colStr[colNum].charAt(0);
+                cellContents curCell;
+                switch (cellChar) {
+                    case EMPTY_CHAR -> curCell = cellContents.EMPTY;
+                    case RED_CHAR -> curCell = cellContents.RED;
+                    case GREEN_CHAR -> curCell = cellContents.GREEN;
+                    case INVALID_CHAR -> curCell = cellContents.INVALID;
+                    default -> curCell = null;
                 }
+                grid[rowNum][colNum] = curCell;
             }
-            initZobrist();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            grid = getEmptyGrid();
         }
+        initZobrist();
     }
 
     private HoppersConfig(cellContents[][] grid) {
@@ -81,14 +75,14 @@ public class HoppersConfig implements Configuration {
                     //generate vertical and horizontal neighbors
                     if (isEvenCell(row, col)) {
                         //technically this if statement isn't be necessary, but it also would be slower without it
-                        int orthJump=JUMP_SIZE*JUMP_MULTIPLIER;
+                        int orthJump = JUMP_SIZE * JUMP_MULTIPLIER;
                         //generate orthagonals here
                         generateConfig(row, col, orthJump, 0, neighbors, false);
                         generateConfig(row, col, -orthJump, 0, neighbors, false);
                         generateConfig(row, col, 0, orthJump, neighbors, false);
                         generateConfig(row, col, 0, -orthJump, neighbors, false);
                     }
-                    int diagJump=JUMP_SIZE;
+                    int diagJump = JUMP_SIZE;
                     //generate diagonals here
                     generateConfig(row, col, diagJump, diagJump, neighbors, false);
                     generateConfig(row, col, diagJump, -diagJump, neighbors, false);
@@ -102,12 +96,12 @@ public class HoppersConfig implements Configuration {
         return neighbors;
     }
 
-    public HoppersConfig moveFrog(int startRow, int startCol, int endRow, int endCol){
-        ArrayList<Configuration> config=new ArrayList<>();
-        int rowOffset=startRow-endRow;
-        int colOffset=startCol-endCol;
-        generateConfig(startRow,startCol,rowOffset,colOffset,config,false);
-        if(config.size()!=0){
+    public HoppersConfig moveFrog(int startRow, int startCol, int endRow, int endCol) {
+        ArrayList<Configuration> config = new ArrayList<>();
+        int rowOffset = endRow - startRow;
+        int colOffset = endCol - startCol;
+        generateConfig(startRow, startCol, rowOffset / JUMP_MULTIPLIER, colOffset / JUMP_MULTIPLIER, config, false);
+        if (!config.isEmpty()) {
             return (HoppersConfig) config.get(0);
         }
         return null;
@@ -115,6 +109,7 @@ public class HoppersConfig implements Configuration {
 
     /**
      * Adds new configurations to the given ArrayList by moving the current row in the given direction
+     *
      * @rit.pre curRow and curCol point to a cell within bounds containing a green or red frog
      */
     private void generateConfig(int curRow, int curCol, int rowOffset, int colOffset, ArrayList<Configuration> configurations, boolean canLand) {
@@ -259,7 +254,7 @@ public class HoppersConfig implements Configuration {
                 if (cell != cellContents.EMPTY) {
                     //EMPTY serves as the #0 ordinal, so no need to add +1 when getting value to change by
                     //the ^ means XOR
-                    hash=hash ^ zobristTable[row][col][cell.ordinal()];
+                    hash = hash ^ zobristTable[row][col][cell.ordinal()];
                 }
             }
         }
@@ -267,7 +262,7 @@ public class HoppersConfig implements Configuration {
         return hash;
     }
 
-    public cellContents get(int row, int col){
+    public cellContents get(int row, int col) {
         return grid[row][col];
     }
 }

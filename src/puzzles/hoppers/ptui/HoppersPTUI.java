@@ -13,13 +13,10 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
     private HoppersConfig conf;
 
     public HoppersPTUI(String fname) {
-        conf = new HoppersConfig(fname);
-        model = new HoppersModel();
-        model.addObserver(this);
-        load(fname);
-
-        System.out.println();
-        printHelp();
+            model = new HoppersModel();
+            model.addObserver(this);
+            load(fname);
+            printHelp();
     }
 
     public static void main(String[] args) {
@@ -34,6 +31,7 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
 
     @Override
     public void update(HoppersModel model, String msg) {
+        System.out.println(msg);
         prettyPrint(model.getConfig());
     }
 
@@ -86,7 +84,7 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
     }
 
     private boolean requArgs(String[] args, int argNum) {
-        if (args.length != argNum) {
+        if (args.length < argNum) {
             System.out.println("Wrong number of args, requires " + argNum + " args, given " + args.length);
             return false;
         }
@@ -94,11 +92,11 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
     }
 
     private void hint() {
-        //TODO
+        model.getHint();
     }
 
     private void reset() {
-        //TODO
+        model.reset();
     }
 
     private void load(String fname) {
@@ -138,6 +136,6 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
         for (int row = 0; row < HoppersConfig.ROWS; row++) {
             System.out.println(row + "| " + lines[row]);
         }
-        //config.
+        System.out.println();
     }
 }
