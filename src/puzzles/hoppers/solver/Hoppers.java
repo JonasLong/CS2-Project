@@ -12,16 +12,24 @@ public class Hoppers {
         if (args.length != 1) {
             System.out.println("Usage: java Hoppers filename");
         } else {
-            String fname=args[0];
-            System.out.println("File: "+fname);
+            String fname = args[0];
+            System.out.println("File: " + fname);
             HoppersConfig c = new HoppersConfig(fname);
             Solver s = new Solver();
-            List<Configuration> solution=(LinkedList<Configuration>) s.findPath(c);
-            if(solution.size()==0){
+            List<Configuration> solution = s.findPath(c);
+            System.out.println(c);
+            System.out.println("Total configs: "+s.getConfigsGenerated());
+            System.out.println("Unique configs: "+s.getUniqueConfigs());
+
+            if (solution.size() == 0) {
                 System.out.println("No solution.");
             } else {
-                for (Configuration pathItem : solution) {
-                    System.out.println(pathItem);
+                for (int i=0; i<solution.size();i++) {
+                    System.out.println("Step "+i+":");
+                    System.out.println(solution.get(i));
+                    if(i<solution.size()-1){
+                        System.out.println();
+                    }
                 }
             }
         }
