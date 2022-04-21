@@ -61,17 +61,17 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
                             }
                             break;
                         case 'q':
-                            if (requArgs(params,0)) {
+                            if (requArgs(params, 0)) {
                                 loop = false;
                             }
                             continue;
                         case 'h':
-                            if (requArgs(params,0)){
+                            if (requArgs(params, 0)) {
                                 hint();
                             }
                             break;
                         case 'r':
-                            if (requArgs(params,0)) {
+                            if (requArgs(params, 0)) {
                                 reset();
                             }
                             break;
@@ -93,29 +93,22 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
         return true;
     }
 
-    private void hint(){
+    private void hint() {
         //TODO
     }
 
-    private void reset(){
+    private void reset() {
         //TODO
     }
 
     private void load(String fname) {
-        String[] params = fname.split(" ");
-        if (params.length != 2) {
-            System.out.println("Usage: > load <filename>");
-        } else {
-            model.updateConfig(conf);
-            System.out.println("Loaded: " + params[0]);
-        }
+        model.load(fname);
     }
 
     private void select(String rowStr, String colStr) {
         int row = Integer.parseInt(rowStr);
         int col = Integer.parseInt(colStr);
-        System.out.println("Selected (" + row + ", " + col + ")");
-        //TODO
+        model.select(row, col);
     }
 
     private void printHelp() {

@@ -26,94 +26,11 @@ public class HoppersConfig implements Configuration {
     public static final char INVALID_CHAR = '*';
     public static final String SEPARATOR = " ";
     public static final String NEWLINE = "\n";
+    public static final int JUMP_SIZE=1;
+    public static final int JUMP_MULTIPLIER=2;
 
     public enum cellContents {
         EMPTY, GREEN, RED, INVALID
-    }
-
-    @Override
-    public Collection<Configuration> getNeighbors() {
-        ArrayList<Configuration> neighbors = new ArrayList<>();
-
-        for (int row = 0; row < ROWS; row++) {
-            for (int col = 0; col < COLS; col++) {
-                cellContents cell = grid[row][col];
-                if (cell == cellContents.GREEN || cell == cellContents.RED) {
-                    //make sure this cell has a frog on it, or chaos will ensue
-                    if (isEvenCell(row, col)) {
-                        //generate vertical and horizontal neighbors
-                        //technically this if statement isn't be necessary, but it also would be slower without it
-                        generateConfig(row, col, 2, 0, neighbors, false);
-                        generateConfig(row, col, -2, 0, neighbors, false);
-                        generateConfig(row, col, 0, 2, neighbors, false);
-                        generateConfig(row, col, 0, -2, neighbors, false);
-                    }
-                    //generate diagonals here
-                    generateConfig(row, col, 1, 1, neighbors, false);
-                    generateConfig(row, col, 1, -1, neighbors, false);
-                    generateConfig(row, col, -1, 1, neighbors, false);
-                    generateConfig(row, col, -1, -1, neighbors, false);
-                }
-
-            }
-        }
-
-        return neighbors;
-    }
-
-    /**
-     * @rit.pre curRow and curCol point to a cell within bounds containing a green or red frog
-     */
-    private void generateConfig(int curRow, int curCol, int rowOffset, int colOffset, ArrayList<Configuration> configurations, boolean canLand) {
-        //target destination
-        int row = curRow + rowOffset;
-        int col = curCol + colOffset;
-
-        //ignore if out of bounds
-        if (0 <= row && row < ROWS && 0 <= col && col < COLS) {
-
-            cellContents targetCell = grid[row][col];
-            switch (targetCell) {
-                case GREEN:
-                    //this space is occupied, so it cannot be jumped on, but it can be jumped over
-                    if (!canLand) {
-                        generateConfig(curRow, curCol, rowOffset * 2, colOffset * 2, configurations, true);
-                    }
-                    break;
-
-                case EMPTY:
-                    if (canLand) {
-                        //add config because this space can be jumped on but not over
-                        cellContents[][] newGrid = getEmptyGrid();
-                        for (int rowNum = 0; rowNum < ROWS; rowNum++) {
-                            //this line was suggested by the IDE, not my fault if it breaks
-                            if (COLS >= 0) System.arraycopy(grid[rowNum], 0, newGrid[rowNum], 0, COLS);
-                        }
-
-                        //do this first to move the current frog (green or red) to the new space
-                        newGrid[row][col] = newGrid[curRow][curCol];
-                        //do this second to empty the space the frog has just jumped from
-                        newGrid[curRow][curCol] = cellContents.EMPTY;
-                        //empty the space the frog jumped over
-                        newGrid[row - rowOffset / 2][col - colOffset / 2] = cellContents.EMPTY;
-                        configurations.add(new HoppersConfig(newGrid));
-                    }
-                case RED:
-                    //ignore config because the red frog cannot be jumped on or over
-
-                case INVALID:
-                    //ignore config because this space cannot be jumped on or over
-
-                default:
-                    //should not be reached
-                    break;
-            }
-        }
-        //ignore this space because it is out of bounds, cannot be jumped on or over
-    }
-
-    private boolean isEvenCell(int row, int col) {
-        return row % 2 == 0;
     }
 
     public HoppersConfig(String filename) {
@@ -148,12 +65,118 @@ public class HoppersConfig implements Configuration {
         }
     }
 
-    private cellContents[][] getEmptyGrid() {
-        return new cellContents[ROWS][COLS];
-    }
-
     private HoppersConfig(cellContents[][] grid) {
         this.grid = grid;
+    }
+
+    @Override
+    public Collection<Configuration> getNeighbors() {
+        ArrayList<Configuration> neighbors = new ArrayList<>();
+
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
+                cellContents cell = grid[row][col];
+                //make sure this cell has a frog on it, or chaos will ensue
+                if (cell == cellContents.GREEN || cell == cellContents.RED) {
+                    //generate vertical and horizontal neighbors
+                    if (isEvenCell(row, col)) {
+                        //technically this if statement isn't be necessary, but it also would be slower without it
+                        int orthJump=JUMP_SIZE*JUMP_MULTIPLIER;
+                        //generate orthagonals here
+                        generateConfig(row, col, orthJump, 0, neighbors, false);
+                        generateConfig(row, col, -orthJump, 0, neighbors, false);
+                        generateConfig(row, col, 0, orthJump, neighbors, false);
+                        generateConfig(row, col, 0, -orthJump, neighbors, false);
+                    }
+                    int diagJump=JUMP_SIZE;
+                    //generate diagonals here
+                    generateConfig(row, col, diagJump, diagJump, neighbors, false);
+                    generateConfig(row, col, diagJump, -diagJump, neighbors, false);
+                    generateConfig(row, col, -diagJump, diagJump, neighbors, false);
+                    generateConfig(row, col, -diagJump, -diagJump, neighbors, false);
+                }
+
+            }
+        }
+
+        return neighbors;
+    }
+
+    public HoppersConfig moveFrog(int startRow, int startCol, int endRow, int endCol){
+        ArrayList<Configuration> config=new ArrayList<>();
+        int rowOffset=startRow-endRow;
+        int colOffset=startCol-endCol;
+        generateConfig(startRow,startCol,rowOffset,colOffset,config,false);
+        if(config.size()!=0){
+            return (HoppersConfig) config.get(0);
+        }
+        return null;
+    }
+
+    /**
+     * Adds new configurations to the given ArrayList by moving the current row in the given direction
+     * @rit.pre curRow and curCol point to a cell within bounds containing a green or red frog
+     */
+    private void generateConfig(int curRow, int curCol, int rowOffset, int colOffset, ArrayList<Configuration> configurations, boolean canLand) {
+        //target destination
+        int row = curRow + rowOffset;
+        int col = curCol + colOffset;
+
+        //ignore if out of bounds
+        if (0 <= row && row < ROWS && 0 <= col && col < COLS) {
+
+            cellContents targetCell = grid[row][col];
+            switch (targetCell) {
+                case GREEN:
+                    //this space is occupied, so it cannot be jumped on, but it can be jumped over
+                    if (!canLand) {
+                        generateConfig(curRow,
+                                curCol,
+                                rowOffset * JUMP_MULTIPLIER,
+                                colOffset * JUMP_MULTIPLIER,
+                                configurations,
+                                true
+                        );
+                    }
+                    break;
+
+                case EMPTY:
+                    if (canLand) {
+                        //add config because this space can be jumped on but not over
+                        cellContents[][] newGrid = getEmptyGrid();
+                        for (int rowNum = 0; rowNum < ROWS; rowNum++) {
+                            //this line was suggested by the IDE, not my fault if it breaks
+                            if (COLS >= 0) System.arraycopy(grid[rowNum], 0, newGrid[rowNum], 0, COLS);
+                        }
+
+                        //do this first to move the current frog (green or red) to the new space
+                        newGrid[row][col] = newGrid[curRow][curCol];
+                        //do this second to empty the space the frog has just jumped from
+                        newGrid[curRow][curCol] = cellContents.EMPTY;
+                        //empty the space the frog jumped over
+                        newGrid[row - rowOffset / JUMP_MULTIPLIER][col - colOffset / JUMP_MULTIPLIER] = cellContents.EMPTY;
+                        configurations.add(new HoppersConfig(newGrid));
+                    }
+                case RED:
+                    //ignore config because the red frog cannot be jumped on or over
+
+                case INVALID:
+                    //ignore config because this space cannot be jumped on or over
+
+                default:
+                    //should not be reached
+                    break;
+            }
+        }
+        //ignore this space because it is out of bounds, cannot be jumped on or over
+    }
+
+    private boolean isEvenCell(int row, int col) {
+        return row % 2 == 0;
+    }
+
+    private cellContents[][] getEmptyGrid() {
+        return new cellContents[ROWS][COLS];
     }
 
     @Override
@@ -203,7 +226,6 @@ public class HoppersConfig implements Configuration {
         return true;
     }
 
-
     private void initZobrist() {
         /*
         Zobrist hashing because I'm a nerd
@@ -243,5 +265,9 @@ public class HoppersConfig implements Configuration {
         }
         //System.out.println("hash for "+this.toString().replace('\n','|')+ " is "+hash);
         return hash;
+    }
+
+    public cellContents get(int row, int col){
+        return grid[row][col];
     }
 }
