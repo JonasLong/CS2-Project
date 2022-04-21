@@ -21,6 +21,15 @@ public class Car {
         }
     }
 
+    public Car(Car other){
+        this.startCol = other.startCol;
+        this.startRow = other.startRow;
+        this.endRow = other.endRow;
+        this.endCol = other.endCol;
+        this.name = other.name;
+        this.movesHorizontal = other.movesHorizontal;
+    }
+
     public boolean movesHorizontal() {
         return movesHorizontal;
     }

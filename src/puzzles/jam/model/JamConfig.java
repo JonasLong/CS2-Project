@@ -5,9 +5,7 @@ import puzzles.common.solver.Configuration;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 
 public class JamConfig implements Configuration{
 
@@ -41,12 +39,10 @@ public class JamConfig implements Configuration{
                 if (car.movesHorizontal()){
                     for (int j = startCol; j < (endCol + 1); j++) {
                         mainGrid[startRow][j] = name;
-                        System.out.println(this);
                     }
                 } else {
                     for (int j = startRow; j < (endRow + 1); j++) {
                         mainGrid[j][startCol] = name;
-                        System.out.println(this);
                     }
                 }
             }
@@ -61,7 +57,9 @@ public class JamConfig implements Configuration{
         for (int i = 0; i < numRows; i++) {
             if (numCols >= 0) System.arraycopy(other.mainGrid[i], 0, this.mainGrid[i], 0, numCols);
         }
-        this.carList.putAll(other.carList);
+        for (Car car: other.carList.values()) {
+            this.carList.put(car.getName(), new Car(car));
+        }
         Car car = this.carList.get(name);
         moveCar(car, forward);
     }
@@ -137,6 +135,19 @@ public class JamConfig implements Configuration{
             string.append("\n");
         }
         return string.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JamConfig jamConfig = (JamConfig) o;
+        return Arrays.deepEquals(mainGrid, jamConfig.mainGrid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(mainGrid);
     }
 }
 
