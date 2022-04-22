@@ -38,6 +38,8 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
     private boolean hasAnimated = false;
 
+    private Random rand = new Random();
+    private int rot = rand.nextInt();
     private Stage stage;
     private Scene scene;
 
@@ -80,6 +82,12 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
                 Button b = buttons[row][col];
                 HoppersConfig.cellContents cell = hoppersModel.getConfig().get(row, col);
                 setButtonBg(b, cell);
+                if (cell == HoppersConfig.cellContents.EMPTY) {
+                    //do nothing, so lily pad rotation is reset to normal when jumped on and left that way
+                    //even when the frog leaves
+                } else {
+                    b.setRotate(0);
+                }
             }
         }
         runAnimation();
@@ -99,6 +107,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
             ROWS = HoppersConfig.ROWS;
             COLS = HoppersConfig.COLS;
             initalizeMainPane();
+            stage.sizeToScene();
         }
     }
 
@@ -107,7 +116,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         main.setBackground(new Background(new BackgroundFill(Color.rgb(18, 145, 227), null, null)));
         infoLabel = new Label();
         infoLabel.textFillProperty().set(Color.LAWNGREEN);
-        infoLabel.setStyle("-fx-font: 18px Comic-Sans");
+        infoLabel.setStyle("-fx-font: 18px Comic-Sans; -fx-padding : 0 0 12 0;");
         HBox infoBox = new HBox();
         infoBox.alignmentProperty().set(Pos.CENTER);
         infoBox.getChildren().add(infoLabel);
@@ -116,6 +125,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         GridPane froggyGrid = new GridPane();
         froggyGrid.setHgap(0);
         froggyGrid.setVgap(0);
+
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLS; col++) {
                 Button button = new Button();
@@ -145,15 +155,25 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         box.getChildren().addAll(hint, load, reset);
         box.alignmentProperty().set(Pos.CENTER);
 
-        main.setTop(infoBox);
-        FlowPane fp=new FlowPane();
-        fp.getChildren().addAll(froggyGrid,box);
-        main.setCenter(fp);
-        //main.setCenter(froggyGrid);
-        //main.setBottom(box);
+        HBox thankBox = new HBox();
+        Label thankLabel = new Label("Thanks for playing!");
+        thankLabel.setStyle("""
+                -fx-font: 10px Comic-Sans""");
+        //ugly
+        //thankLabel.textFillProperty().set(Color.LAWNGREEN);
+        thankBox.getChildren().add(thankLabel);
+        //thankBox.alignmentProperty().set(Pos.CENTER);
 
         scene = new Scene(main);
+        main.setTop(infoBox);
+        FlowPane fp = new FlowPane();
+        fp.getChildren().addAll(froggyGrid, box);
+        main.setCenter(fp);
+        main.setBottom(thankBox);
+
+
         stage.setScene(scene);
+        newPlay();
     }
 
     private void styleButton(Button b) {
@@ -161,22 +181,19 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         b.setBackground(new Background(new BackgroundFill(Color.rgb(18, 145, 227), null, null)));
     }
 
-    private void reset(){
+    private void reset() {
+        newPlay();
         model.reset();
-        hasAnimated=false;
     }
 
     private void loadFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
         File f = fileChooser.showOpenDialog(stage);
-        try {
-            if (f != null) {
-                model.load(f.getCanonicalPath());
-                hasAnimated=false;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (f != null) {
+            newPlay();
+            model.load(f.getPath());
+
         }
     }
 
@@ -191,18 +208,31 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         b.setGraphic(new ImageView(newBg));
     }
 
+    private void newPlay() {
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
+                HoppersConfig.cellContents cell = model.getConfig().get(row, col);
+                Button b = buttons[row][col];
+                if (cell == HoppersConfig.cellContents.EMPTY) {
+                    b.setRotate(rand.nextInt() % 360);
+                } else {
+                    b.toBack();
+                    b.setRotate(0);
+                }
+            }
+        }
+        hasAnimated = false;
+    }
+
     private void runAnimation() {
         if (!hasAnimated && model.getConfig().isSolution()) {
-            Random r=new Random();
             for (int row = 0; row < ROWS; row++) {
                 for (int col = 0; col < COLS; col++) {
-                    HoppersConfig.cellContents cell = model.getConfig().get(col, row);
-                    Button b = buttons[col][row];
+                    HoppersConfig.cellContents cell = model.getConfig().get(row, col);
+                    Button b = buttons[row][col];
                     if (cell == HoppersConfig.cellContents.EMPTY) {
-                        animateButton(b, r.nextInt() % 2 == 0 ? 2 : -2);
+                        animateButton(b, rand.nextInt() % 2 == 0 ? 2 : -2);
                     } else {
-                        b.toBack();
-                        b.setRotate(0);
                     }
                 }
             }
@@ -214,7 +244,8 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         RotateTransition rotateTransition = new RotateTransition();
         rotateTransition.setNode(b);
         rotateTransition.setDuration(Duration.millis(2000));
-        rotateTransition.setByAngle(360 * mult);
+        rotateTransition.setToAngle(360 * mult);
+        //rotateTransition.setByAngle(360 * mult);
         rotateTransition.play();
     }
 }
