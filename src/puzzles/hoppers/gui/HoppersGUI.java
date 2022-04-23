@@ -31,19 +31,40 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
      */
     private final static String RESOURCES_DIR = "resources/";
 
-    private final String TITLE = "Hoppers GUI";
+    /**
+     * Title of the GUI
+     */
+    private final static String TITLE = "Hoppers GUI";
 
+    /**
+     * Number of rows
+     */
     private int ROWS = 0;
+    /**
+     * Number of columns
+     */
     private int COLS = 0;
-
+    /**
+     * Whether the completion animation has been run yet
+     * This is reset to false whenever the configuraiton is reset or loaded from file
+     */
     private boolean hasAnimated = false;
 
-    private Random rand = new Random();
-    private int rot = rand.nextInt();
+    /**
+     * RNG for randomly rotating the lily pads
+     */
+    private final Random rand = new Random();
+    /**
+     * Stage given by start()
+     */
     private Stage stage;
-    private Scene scene;
-
+    /**
+     * 2D array of buttons representing cells in HoppersConfig
+     */
     private Button[][] buttons;
+    /**
+     * Label that updates with information from HoppersModel
+     */
     private Label infoLabel;
 
     // for demonstration purposes
@@ -53,11 +74,23 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     private Image lilyPad = new Image(getClass().getResourceAsStream(RESOURCES_DIR + "lily_pad.png"));
     private Image water = new Image(getClass().getResourceAsStream(RESOURCES_DIR + "water.png"));
 
+    /**
+     * The current model instance
+     */
     HoppersModel model;
 
+    /**
+     * Called when the Application is first initalized
+     */
     public void init() {
     }
 
+    /**
+     * Called when the stage is started. Shows the GUI
+     *
+     * @param stage Stage object of this application
+     * @throws Exception because of threading, any exceptions will be printed out by Application in a stack trace
+     */
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
@@ -93,15 +126,23 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         runAnimation();
     }
 
+    /**
+     * main method, launches the GUI application
+     *
+     * @param args filename
+     */
     public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Usage: java HoppersPTUI filename");
         } else {
             Application.launch(args);
-            System.out.println("");
+            System.out.println();
         }
     }
 
+    /**
+     * Checks if the grid has been resized by a file load and re-creates the button grid and resizes the stage
+     */
     public void checkResize() {
         if (ROWS != HoppersConfig.ROWS || COLS != HoppersConfig.COLS) {
             ROWS = HoppersConfig.ROWS;
@@ -111,6 +152,9 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         }
     }
 
+    /**
+     * Creates all static and dynamic aspects of the GUI, some of which are stored in variables to be updated later
+     */
     private void initalizeMainPane() {
         BorderPane main = new BorderPane();
         main.setBackground(new Background(new BackgroundFill(Color.rgb(18, 145, 227), null, null)));
@@ -164,7 +208,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         thankBox.getChildren().add(thankLabel);
         //thankBox.alignmentProperty().set(Pos.CENTER);
 
-        scene = new Scene(main);
+        Scene scene = new Scene(main);
         main.setTop(infoBox);
         FlowPane fp = new FlowPane();
         fp.getChildren().addAll(froggyGrid, box);
@@ -176,16 +220,28 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         newPlay();
     }
 
+    /**
+     * Styles the given button
+     * This is currently only used on the buttons at the bottom of the GUI
+     *
+     * @param b the provided button instance
+     */
     private void styleButton(Button b) {
         b.setStyle("-fx-font: 14px Comic-Sans; -fx-border-style: solid inside;");
         b.setBackground(new Background(new BackgroundFill(Color.rgb(18, 145, 227), null, null)));
     }
 
+    /**
+     * Resets the configuration to its starting state
+     */
     private void reset() {
         newPlay();
         model.reset();
     }
 
+    /**
+     * Loads from a given file
+     */
     private void loadFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
@@ -197,6 +253,12 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         }
     }
 
+    /**
+     * Sets the background image of a given button given its cellContents
+     *
+     * @param b Button instance
+     * @param cell Contents of the corresponding cell in the current configuration
+     */
     private void setButtonBg(Button b, HoppersConfig.cellContents cell) {
         Image newBg = null;
         switch (cell) {
@@ -208,6 +270,10 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         b.setGraphic(new ImageView(newBg));
     }
 
+    /**
+     * Resets the orientation of the lilypads
+     * This rotates empty cells randomly, and resets rotation on all other cells to 0 degrees
+     */
     private void newPlay() {
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLS; col++) {
@@ -224,6 +290,9 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         hasAnimated = false;
     }
 
+    /**
+     * Run a short animation where all empty cells spin around and then align in the same direction
+     */
     private void runAnimation() {
         if (!hasAnimated && model.getConfig().isSolution()) {
             for (int row = 0; row < ROWS; row++) {
@@ -232,7 +301,6 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
                     Button b = buttons[row][col];
                     if (cell == HoppersConfig.cellContents.EMPTY) {
                         animateButton(b, rand.nextInt() % 2 == 0 ? 2 : -2);
-                    } else {
                     }
                 }
             }
@@ -240,12 +308,18 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         }
     }
 
+    /**
+     * Runs the animation on a specific button
+     * Called by runAnimation()
+     *
+     * @param b Provided button instance
+     * @param mult Number of times to rotate
+     */
     private void animateButton(Button b, int mult) {
         RotateTransition rotateTransition = new RotateTransition();
         rotateTransition.setNode(b);
         rotateTransition.setDuration(Duration.millis(2000));
         rotateTransition.setToAngle(360 * mult);
-        //rotateTransition.setByAngle(360 * mult);
         rotateTransition.play();
     }
 }

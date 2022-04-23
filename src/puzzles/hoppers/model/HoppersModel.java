@@ -4,9 +4,7 @@ import puzzles.common.Observer;
 import puzzles.common.solver.Configuration;
 import puzzles.common.solver.Solver;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,13 +18,29 @@ public class HoppersModel {
      * the current configuration
      */
     private HoppersConfig currentConfig;
-
+    /**
+     * Instance of Solver to use
+     */
     private Solver solver = new Solver();
+    /**
+     * LinkedList to the solution of this configuration
+     */
     public List<Configuration> path;
-
+    /**
+     * Current filename that this model last read from
+     */
     private String curFname;
+    /**
+     * Row selected. Used by select()
+     */
     private int selectedRow;
+    /**
+     * Column selected. Used by select()
+     */
     private int selectedCol;
+    /**
+     * Whether there is a row and column selected
+     */
     private boolean isSelected = false;
 
     /**
@@ -48,6 +62,11 @@ public class HoppersModel {
         }
     }
 
+    /**
+     * Loads a config from a given file
+     *
+     * @param fname filename
+     */
     public void load(String fname) {
         try {
             currentConfig = new HoppersConfig(fname);
@@ -59,20 +78,26 @@ public class HoppersModel {
         }
     }
 
+    /**
+     * Returns the current config
+     *
+     * @return config
+     */
     public HoppersConfig getConfig() {
         return currentConfig;
     }
 
+    /**
+     * Select a space. If a space is already selected, attempt to move the already selected frog to the given location.
+     *
+     * @param row row number
+     * @param col column number
+     */
     public void select(int row, int col) {
         HoppersConfig.cellContents cell = currentConfig.get(row, col);
         if (isSelected) {
             isSelected = false;
-            //if(cell== HoppersConfig.cellContents.EMPTY){
             moveFrog(selectedRow, selectedCol, row, col);
-            /*} else {
-                alertObservers("");
-            }*/
-            //TODO
         } else {
             if (cell == HoppersConfig.cellContents.GREEN || cell == HoppersConfig.cellContents.RED) {
                 selectedRow = row;
@@ -87,6 +112,14 @@ public class HoppersModel {
         }
     }
 
+    /**
+     * Attempts to move a frog from one space to another
+     *
+     * @param startRow starting row number (y1)
+     * @param startCol starting column number (x1)
+     * @param endRow ending row number (y2)
+     * @param endCol ending column number (x2)
+     */
     private void moveFrog(int startRow, int startCol, int endRow, int endCol) {
         HoppersConfig c = currentConfig.moveFrog(startRow, startCol, endRow, endCol);
         if (c == null) {
@@ -97,6 +130,9 @@ public class HoppersModel {
         }
     }
 
+    /**
+     * Solves the current configuration, then gets the next configuration after this one
+     */
     public void getHint() {
         refreshPath();
         boolean hintFound = false;
@@ -117,17 +153,30 @@ public class HoppersModel {
         }
     }
 
+    /**
+     * Resets the puzzle to the starting configuration
+     */
     public void reset(){
         load(curFname);
         alertObservers("Puzzle reset!");
     }
 
+    /**
+     * Solves the current configuration
+     */
     private void refreshPath() {
         //todo only run when user has moved a frog (or reset) to save computation time
         //this method call is the most computationally intensive part of hints and the model as a whole
         path = solver.findPath(currentConfig);
     }
 
+    /**
+     * Prints a row,column pair of coordinates in (row,col) format
+     *
+     * @param row row number
+     * @param col column number
+     * @return string representation
+     */
     public String printCoords(int row, int col) {
         return "(" + row + ", " + col + ")";
     }

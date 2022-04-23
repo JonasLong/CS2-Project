@@ -8,7 +8,16 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Solver program
+ */
 public class Hoppers {
+    /**
+     * Main program
+     * Runs the solver for the given file
+     *
+     * @param args filename
+     */
     public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Usage: java Hoppers filename");

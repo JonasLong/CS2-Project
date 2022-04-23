@@ -1,7 +1,6 @@
 package puzzles.hoppers.model;
 
 import puzzles.common.solver.Configuration;
-import puzzles.hoppers.solver.Hoppers;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -13,32 +12,69 @@ import java.util.Random;
 
 public class HoppersConfig implements Configuration {
 
-    private cellContents[][] grid;
-    //Table of random ints for Zobrist hashing
+    /**
+     * Table of random ints for Zobrist hashing
+     */
     private static int[][][] zobristTable;
+    /**
+     * Whether the zobrist table has been initalized
+     */
+    private static boolean zobristInitalized=false;
+    /**
+     * Grid of cellContents for this config
+     */
+    private cellContents[][] grid;
 
+    /**
+     * Number of rows
+     */
     public static int ROWS = 0;
+    /**
+     * Number of columns
+     */
     public static int COLS = 0;
 
+    /**
+     * Characters in the provided file that correspond with cellContents
+     */
     public static final char EMPTY_CHAR = '.';
     public static final char GREEN_CHAR = 'G';
     public static final char RED_CHAR = 'R';
     public static final char INVALID_CHAR = '*';
+
     public static final String SEPARATOR = " ";
     public static final String NEWLINE = "\n";
+    /**
+     * Number of cells to jump at a time. Not sure why you would want to change this
+     */
     public static final int JUMP_SIZE = 1;
+    /**
+     * Number to multiply by when double jumping offsets. Not sure why you would want to change this
+     */
     public static final int JUMP_MULTIPLIER = 2;
 
+    /**
+     * Enum of possible contents of each cell
+     */
     public enum cellContents {
         EMPTY, GREEN, RED, INVALID
     }
 
+    /**
+     * Creates a new instance of HoppersConfig, reading in data for the configuration from the given file
+     * Whenever a new configuration is read in from file, all existing HoppersConfig instances should be thrown out,
+     * since their sizes may vary, which could lead to out of bounds errors
+     *
+     * @param filename filename
+     * @throws IOException errors reading from the given file
+     */
     public HoppersConfig(String filename) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(filename));
 
         String[] size = reader.readLine().split(SEPARATOR);
         ROWS = Integer.parseInt(size[0]);
         COLS = Integer.parseInt(size[1]);
+        zobristInitalized=false; //grid has changed, so Zobrist will need to be re-initalized
         grid = getEmptyGrid();
 
         for (int rowNum = 0; rowNum < ROWS; rowNum++) {
@@ -56,9 +92,14 @@ public class HoppersConfig implements Configuration {
                 grid[rowNum][colNum] = curCell;
             }
         }
-        initZobrist();
     }
 
+    /**
+     * Creates a new instance of HoppersInstance from an existing instance
+     * Reads from the provided grid using <b>shallow copy</b>
+     *
+     * @param grid provided grid to set
+     */
     private HoppersConfig(cellContents[][] grid) {
         this.grid = grid;
     }
@@ -96,6 +137,17 @@ public class HoppersConfig implements Configuration {
         return neighbors;
     }
 
+    /**
+     * Attempt to move a frog from the starting location to the ending location
+     * Checks that the start location contains a frog, the destination is empty, a frog is being jumped over, and the spacing is correct
+     * Removes any frog that is jumped over
+     *
+     * @param startRow starting row number (y1)
+     * @param startCol starting column number (x1)
+     * @param endRow ending row number (y2)
+     * @param endCol ending column number (x2)
+     * @return new HoppersConfig instance with the frog moved
+     */
     public HoppersConfig moveFrog(int startRow, int startCol, int endRow, int endCol) {
         ArrayList<Configuration> config = new ArrayList<>();
         int rowOffset = endRow - startRow;
@@ -108,9 +160,15 @@ public class HoppersConfig implements Configuration {
     }
 
     /**
-     * Adds new configurations to the given ArrayList by moving the current row in the given direction
+     * Adds new configurations to the given ArrayList by moving the frog on the given space by the given offset
+     * The offset should first be set to land on a frog, then it will check the cell beyond that in the direction of the offsets
      *
-     * @rit.pre curRow and curCol point to a cell within bounds containing a green or red frog
+     * @param curRow starting row number (y1)
+     * @param curCol starting column number (x1)
+     * @param rowOffset amount to change the row by (delta y)
+     * @param colOffset amount to change the column by (delta x)
+     * @param configurations configuration list to add to
+     * @param canLand used for recursive calls, should be set to false when called by an outside function
      */
     private void generateConfig(int curRow, int curCol, int rowOffset, int colOffset, ArrayList<Configuration> configurations, boolean canLand) {
         //target destination
@@ -166,10 +224,20 @@ public class HoppersConfig implements Configuration {
         //ignore this space because it is out of bounds, cannot be jumped on or over
     }
 
+    /**
+     * Checks if a given cell is even, and therefore has orthagonal neighbors
+     * @param row row number
+     * @param col column number
+     * @return whether the cell is even
+     */
     private boolean isEvenCell(int row, int col) {
         return row % 2 == 0;
     }
 
+    /**
+     * returns an empty grid with the size specified by ROWS and COLS
+     * @return empty grid
+     */
     private cellContents[][] getEmptyGrid() {
         return new cellContents[ROWS][COLS];
     }
@@ -221,14 +289,20 @@ public class HoppersConfig implements Configuration {
         return true;
     }
 
-    private void initZobrist() {
+    /**
+     * Zobrist Hashing must be initialized with random numbers before it is used
+     * This method creates a grid of random integers
+     */
+    private static void initZobrist() {
         /*
         Zobrist hashing because I'm a nerd
         This is based on the pseudocode implementation for chess in https://en.wikipedia.org/wiki/Zobrist_hashing
         Yes I could have used java.util.Arrays.deepHashCode( grid ); but I don't want to
         This part initializes the hashing algorithm
         */
+        zobristInitalized=true;
         Random rand = new Random(24); //allowed to be predictably random, just can't be procedural based on row/column
+        //the unchanging seed also means this method can be run multiple times without changing hash values of existing config instance
         //fill a table of random numbers/bitstrings
         //this isn't exactly how the example does it, they use a 2d array of [COLS*ROWS][pieces] for some reason
         zobristTable = new int[ROWS][COLS][cellContents.values().length]; //no -1 because the example doesn't include EMPTY but is 1 indexed
@@ -243,8 +317,17 @@ public class HoppersConfig implements Configuration {
         }
     }
 
+    /**
+     * Returns an integer representation of the current configuration. This uses Zohurst Hashing because it's cool
+     *
+     * @return hash representation
+     */
     public int hashCode() {
-        /*TODO if i have the time implement methods for rehashing to speed this up
+        //initalize if not already done
+        if (!zobristInitalized){
+            initZobrist();
+        }
+        /*TODO if i have the time: implement methods for rehashing to speed this up
         a benefit of Zohurst is you can XOR cells in and out when you make changes without having to recompute the entire hash*/
         int hash = 0;
         //loop over the board positions
@@ -262,6 +345,13 @@ public class HoppersConfig implements Configuration {
         return hash;
     }
 
+    /**
+     * Get the contents of a cell at the given coordinates
+     *
+     * @param row row numbers
+     * @param col column numbers
+     * @return contents of the given cell
+     */
     public cellContents get(int row, int col) {
         return grid[row][col];
     }

@@ -9,9 +9,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class HoppersPTUI implements Observer<HoppersModel, String> {
+    /**
+     * Instance of HoppersModel to interact with
+     */
     private HoppersModel model;
-    private HoppersConfig conf;
 
+    /**
+     * Constructor for HoppersPTUI
+     *
+     * @param fname filename
+     */
     public HoppersPTUI(String fname) {
             model = new HoppersModel();
             model.addObserver(this);
@@ -19,6 +26,12 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
             printHelp();
     }
 
+    /**
+     * Main function of HoppersPTUI
+     * Calls getInput()
+     *
+     * @param args filename
+     */
     public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Usage: java HoppersPTUI filename");
@@ -35,6 +48,9 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
         prettyPrint(model.getConfig());
     }
 
+    /**
+     * Gets and processes commands input from System.in until quit command is entered
+     */
     public void getInput() {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         boolean loop = true;
@@ -83,6 +99,13 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
         }
     }
 
+    /**
+     * Checks that the number of arguments entered is correct
+     *
+     * @param args array of arguments
+     * @param argNum number of required arguments
+     * @return whether there are enough args given
+     */
     private boolean requArgs(String[] args, int argNum) {
         if (args.length < argNum) {
             System.out.println("Wrong number of args, requires " + argNum + " args, given " + args.length);
@@ -91,14 +114,25 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
         return true;
     }
 
+    /**
+     * Gets a hint from the model
+     */
     private void hint() {
         model.getHint();
     }
 
+    /**
+     * Resets the model to its starting configuration
+     */
     private void reset() {
         model.reset();
     }
 
+    /**
+     * Loads a new configuration from a given file
+     *
+     * @param fname filename
+     */
     private void load(String fname) {
         model.load(fname);
     }
@@ -109,6 +143,9 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
         model.select(row, col);
     }
 
+    /**
+     * Outputs a help message
+     */
     private void printHelp() {
         System.out.println("""
                 h(int)              -- hint next move
@@ -118,6 +155,11 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
                 r(eset)             -- reset the current game""");
     }
 
+    /**
+     * Prints out the given configuration with row and column numbers for the PTUI
+     *
+     * @param config configuration
+     */
     private void prettyPrint(HoppersConfig config) {
         String[] lines = config.toString().split("\n");
         //Print the column numbers at the top
