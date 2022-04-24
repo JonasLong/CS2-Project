@@ -3,6 +3,7 @@ package puzzles.jam.model;
 import puzzles.common.solver.Configuration;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -14,7 +15,7 @@ public class JamConfig implements Configuration{
     private static int numRows;
     private static int numCols;
 
-    public JamConfig(String filename){
+    public JamConfig(File filename){
         try (BufferedReader br = new BufferedReader(new FileReader(filename))){
             carList = new HashMap<>();
             String[] line = br.readLine().split(" ");
@@ -156,6 +157,18 @@ public class JamConfig implements Configuration{
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(mainGrid);
+    }
+
+    public static int getNumCols() {
+        return numCols;
+    }
+
+    public static int getNumRows() {
+        return numRows;
+    }
+
+    public Character[][] getMainGrid() {
+        return mainGrid;
     }
 }
 

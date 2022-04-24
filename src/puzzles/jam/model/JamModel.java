@@ -49,10 +49,14 @@ public class JamModel {
     }
 
     public void load(File fname) {
-        currentConfig = new JamConfig(fname.getName());
-        filename = fname.getName();
-        selection = false;
-        alertObservers("Loaded: " + fname.getName());
+        currentConfig = new JamConfig(fname);
+        if (currentConfig.getMainGrid() != null){
+            filename = fname.getPath();
+            selection = false;
+            alertObservers("Loaded: " + fname.getName());
+        } else {
+            System.out.println("Could not find file.");
+        }
     }
 
     public JamConfig getConfig() {
@@ -122,7 +126,8 @@ public class JamModel {
     }
 
     public void reset(){
-        currentConfig = new JamConfig(filename);
+        File file = new File(filename);
+        currentConfig = new JamConfig(file);
         selection = false;
         alertObservers("Puzzle reset!");
     }
