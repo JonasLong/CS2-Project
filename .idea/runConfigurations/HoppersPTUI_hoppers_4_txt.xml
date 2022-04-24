@@ -8,7 +8,7 @@
     <option name="PROGRAM_PARAMETERS" value="data/hoppers/hoppers-4.txt" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="puzzles.hoppers.ptui.*" />
+        <option name="PATTERN" value="puzzles.jam.ptui.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

@@ -1,4 +1,4 @@
-package puzzles.hoppers.ptui;
+package puzzles.jam.ptui;
 
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;

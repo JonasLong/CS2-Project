@@ -10,7 +10,7 @@
     <option name="INPUT_FILE" value="$PROJECT_DIR$/input/hoppers-4-ptui-in.txt" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="puzzles.hoppers.ptui.*" />
+        <option name="PATTERN" value="puzzles.jam.ptui.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

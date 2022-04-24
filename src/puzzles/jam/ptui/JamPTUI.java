@@ -1,12 +1,10 @@
 package puzzles.jam.ptui;
 
 import puzzles.common.Observer;
-import puzzles.hoppers.ptui.ConsoleApplication;
 import puzzles.jam.model.JamConfig;
 import puzzles.jam.model.JamModel;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
