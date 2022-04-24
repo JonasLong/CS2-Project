@@ -120,6 +120,14 @@ public class JamConfig implements Configuration{
         return nbr;
     }
 
+    public Character getAt(int row, int col){
+        return mainGrid[row][col];
+    }
+
+    public Car getCar(Character name){
+        return carList.get(name);
+    }
+
     public void addConfig(ArrayList<Configuration> list, int row, int col, boolean forward, boolean horiz) {
         if (!mainGrid[row][col].equals('.') && (carList.get(mainGrid[row][col]).movesHorizontal() == horiz)){
             list.add(new JamConfig((this), mainGrid[row][col], forward));
