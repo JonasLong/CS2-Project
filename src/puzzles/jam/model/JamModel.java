@@ -88,6 +88,7 @@ public class JamModel {
                 selectedCar = currentConfig.getCar(val);
                 selectedRow = row;
                 selectedCol = col;
+                alertObservers(("Selected (" + row + ", " + col + ")"));
             }
         }
     }

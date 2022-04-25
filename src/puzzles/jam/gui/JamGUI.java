@@ -1,46 +1,155 @@
 package puzzles.jam.gui;
 
 import javafx.application.Application;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import puzzles.common.Observer;
+import puzzles.jam.model.JamConfig;
 import puzzles.jam.model.JamModel;
+
+import java.io.File;
+import java.util.HashMap;
 
 public class JamGUI extends Application  implements Observer<JamModel, String>  {
     /** The resources directory is located directly underneath the gui package */
     private final static String RESOURCES_DIR = "resources/";
 
     // for demonstration purposes
-    private final static String X_CAR_COLOR = "#DF0101";
+    private final static Color X_CAR_COLOR = Color.web("#DF0101", 1.0);
     private final static int BUTTON_FONT_SIZE = 20;
     private final static int ICON_SIZE = 75;
+    private int carNum;
+    private HashMap<Character, Color> carMap;
+    private Color[] colorList = new Color[]{
+            Color.BLUE,
+            Color.ORANGE,
+            Color.YELLOW,
+            Color.VIOLET,
+            Color.GREEN,
+            Color.PINK,
+            Color.DARKGREY,
+            Color.BROWN,
+            Color.GREENYELLOW,
+            Color.ORANGERED,
+            Color.INDIGO,
+            Color.TURQUOISE,
+            Color.LIME,
+            Color.FIREBRICK,
+            Color.MEDIUMVIOLETRED,
+            Color.DODGERBLUE,
+    };
+    private boolean initialized;
+
+    private Label topText;
+    private GridPane mainGrid;
+    private JamModel model;
+    private BorderPane mainbox;
 
     public void init() {
+        this.initialized = false;
         String filename = getParameters().getRaw().get(0);
+        this.carNum = 0;
+        this.model = new JamModel();
+        this.model.addObserver(this);
+        this.model.load(new File(filename));
     }
 
     @Override
     public void start(Stage stage) throws Exception {
-        Button button1 = new Button();
-        button1.setStyle(
-                "-fx-font-size: " + BUTTON_FONT_SIZE + ";" +
-                "-fx-background-color: " + X_CAR_COLOR + ";" +
-                "-fx-font-weight: bold;");
-        button1.setText("X");
-        button1.setMinSize(ICON_SIZE, ICON_SIZE);
-        button1.setMaxSize(ICON_SIZE, ICON_SIZE);
-        Scene scene = new Scene(button1);
+        this.initialized = true;
+        mainbox = new BorderPane();
+        this.topText = new Label("Starting Game!");
+        topText.setFont(Font.font(18));
+        mainbox.setTop(topText);
+
+        this.mainGrid = makeMainGrid(this.model);
+        mainbox.setCenter(mainGrid);
+
+        Button reset = new Button("Reset");
+        reset.setOnAction((event) -> model.reset());
+        Button load = new Button("Load");
+        load.setOnAction((event) -> loadFile());
+        Button hint = new Button("Hint");
+        hint.setOnAction((event) -> model.getHint());
+        styleButton(reset);
+        styleButton(load);
+        styleButton(hint);
+
+        HBox bottomButtons = new HBox(reset, load, hint);
+        mainbox.setBottom(bottomButtons);
+
+        Scene scene = new Scene(mainbox);
         stage.setScene(scene);
         stage.show();
     }
 
+    public void loadFile(){
+
+    }
+
+    public GridPane makeMainGrid(JamModel model){
+        GridPane grid = new GridPane();
+        this.carMap = new HashMap<>();
+        carMap.put('X', X_CAR_COLOR);
+        for (int i = 0; i < JamConfig.getNumRows(); i++) {
+            for (int j = 0; j < JamConfig.getNumCols(); j++) {
+                Button button = new Button(String.valueOf(model.getConfig().getAt(i, j)));
+                button.setFont(Font.font(BUTTON_FONT_SIZE));
+                int finalI = i;
+                int finalJ = j;
+                button.setOnAction((event) -> this.model.select(finalI, finalJ));
+                if (model.getConfig().getAt(i, j).equals('.')){
+                    button.setBackground(new Background(new BackgroundFill(new Color(1, 1, 1, 1),
+                            CornerRadii.EMPTY, Insets.EMPTY)));
+                } else {
+                    if (carMap.containsKey(model.getConfig().getAt(i, j))){
+                        button.setBackground(new Background(new BackgroundFill(carMap.get(model.getConfig().getAt(i, j)),
+                                CornerRadii.EMPTY, Insets.EMPTY)));
+                    } else {
+                        button.setBackground(new Background(new BackgroundFill(colorList[carNum],
+                                CornerRadii.EMPTY, Insets.EMPTY)));
+                        carMap.put(model.getConfig().getAt(i, j), colorList[carNum]);
+                        carNum++;
+                    }
+                }
+                button.setMinHeight(ICON_SIZE);
+                button.setMinWidth(ICON_SIZE);
+                grid.add(button, j, i);
+            }
+        }
+        return grid;
+    }
+
     @Override
     public void update(JamModel jamModel, String msg) {
-
+        if (initialized){
+            topText.setText(msg);
+            this.model = jamModel;
+            ObservableList<Node> list = mainGrid.getChildren();
+            for (int i = 0; i < list.size(); ++i){
+                Button button = (Button) list.get(i);
+                int row = GridPane.getRowIndex(button);
+                int col = GridPane.getColumnIndex(button);
+                button.setText(String.valueOf(model.getConfig().getAt(row,col)));
+                button.setBackground(new Background(new BackgroundFill(carMap.get(model.getConfig().getAt(row, col)),
+                        CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+        }
     }
 
     public static void main(String[] args) {
         Application.launch(args);
+    }
+
+    private void styleButton(Button b) {
+        b.setStyle("-fx-font: 14px Comic-Sans; -fx-border-style: solid inside;");
     }
 }
