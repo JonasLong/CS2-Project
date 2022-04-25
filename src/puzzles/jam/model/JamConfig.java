@@ -15,6 +15,10 @@ public class JamConfig implements Configuration{
     private int numRows;
     private int numCols;
 
+    /**
+     * create a new config using a file
+     * @param filename the file to be used
+     */
     public JamConfig(File filename){
         try (BufferedReader br = new BufferedReader(new FileReader(filename))){
             carList = new HashMap<>();
@@ -52,6 +56,12 @@ public class JamConfig implements Configuration{
         }
     }
 
+    /**
+     * create a copy of another config, but with one car moved
+     * @param other the config to copy
+     * @param name the name of the car to move
+     * @param forward boolean for car direction, true = forward
+     */
     public JamConfig(JamConfig other, Character name, boolean forward){
         this.numCols = other.numCols;
         this.numRows = other.numRows;
@@ -67,6 +77,11 @@ public class JamConfig implements Configuration{
         moveCar(car, forward);
     }
 
+    /**
+     * move one car one space
+     * @param car the car to move
+     * @param forward boolean for direction
+     */
     public void moveCar(Car car, boolean forward){
         if (forward){
             mainGrid[car.getStartRow()][car.getStartCol()] = '.';
@@ -93,11 +108,19 @@ public class JamConfig implements Configuration{
         }
     }
 
+    /**
+     * check iof config is the solution
+     * @return boolean for if the thing is the right thing
+     */
     @Override
     public boolean isSolution() {
         return carList.get('X').getEndCol() == (numCols - 1);
     }
 
+    /**
+     * get the list of possible neighbors for the current config
+     * @return the list of neighbor configs
+     */
     @Override
     public Collection<Configuration> getNeighbors() {
         ArrayList<Configuration> nbr = new ArrayList<>();
@@ -123,20 +146,40 @@ public class JamConfig implements Configuration{
         return nbr;
     }
 
+    /**
+     * get the value of teh grid at a specified row or column
+     * @param row the row coordinate to check
+     * @param col the column to check
+     * @return the character from the main grid
+     */
     public Character getAt(int row, int col){
         return mainGrid[row][col];
     }
 
+    /**
+     * get the Car object of a car with a given name
+     * @param name the name of teh car to get
+     * @return the Car object
+     */
     public Car getCar(Character name){
         return carList.get(name);
     }
 
+    /**
+     * add a config to a list, having checked for a move's validity and moved a car if valid
+     * @param list the list to add to
+     * @param row the row coord of the car to move
+     * @param col the column coord of the car to be moved
+     * @param forward boolean for direction
+     * @param horiz the expected value of teh car's movesHorizontal variable. the move is valid if this matches the actual value
+     */
     public void addConfig(ArrayList<Configuration> list, int row, int col, boolean forward, boolean horiz) {
         if (!mainGrid[row][col].equals('.') && (carList.get(mainGrid[row][col]).movesHorizontal() == horiz)){
             list.add(new JamConfig((this), mainGrid[row][col], forward));
         }
     }
 
+    @Override
     public String toString(){
         StringBuilder string = new StringBuilder();
         for (int i = 0; i < numRows; i++) {

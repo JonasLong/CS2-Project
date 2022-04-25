@@ -20,10 +20,9 @@ import java.io.File;
 import java.util.HashMap;
 
 public class JamGUI extends Application  implements Observer<JamModel, String>  {
-    /** The resources directory is located directly underneath the gui package */
-    private final static String RESOURCES_DIR = "resources/";
-
-    // for demonstration purposes
+    /**
+     * Various variables to store things like the constants, a list of colors for cars, a map of cars and their colors...
+     */
     private final static Color X_CAR_COLOR = Color.web("#DF0101", 1.0);
     private final static int BUTTON_FONT_SIZE = 20;
     private final static int ICON_SIZE = 75;
@@ -57,6 +56,9 @@ public class JamGUI extends Application  implements Observer<JamModel, String>  
     private BorderPane mainbox;
     private Stage stage;
 
+    /**
+     * initializes the model, adds the ui to the observers, loads teh file into the modeld
+     */
     public void init() {
         this.initialized = false;
         String filename = getParameters().getRaw().get(0);
@@ -66,6 +68,11 @@ public class JamGUI extends Application  implements Observer<JamModel, String>  
         this.model.load(new File(filename));
     }
 
+    /**
+     * starts teh GUI
+     * @param stage the stage to put the gui scene on
+     * @throws Exception
+     */
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
@@ -84,9 +91,9 @@ public class JamGUI extends Application  implements Observer<JamModel, String>  
         load.setOnAction((event) -> loadFile());
         Button hint = new Button("Hint");
         hint.setOnAction((event) -> model.getHint());
-        styleButton(reset);
-        styleButton(load);
-        styleButton(hint);
+        reset.setStyle("-fx-font: 14px Comic-Sans; -fx-border-style: solid inside;");
+        load.setStyle("-fx-font: 14px Comic-Sans; -fx-border-style: solid inside;");
+        hint.setStyle("-fx-font: 14px Comic-Sans; -fx-border-style: solid inside;");
 
         HBox bottomButtons = new HBox(reset, load, hint);
         mainbox.setBottom(bottomButtons);
@@ -96,6 +103,9 @@ public class JamGUI extends Application  implements Observer<JamModel, String>  
         stage.show();
     }
 
+    /**
+     * loads a new file with the file chooser
+     */
     public void loadFile(){
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
@@ -105,6 +115,11 @@ public class JamGUI extends Application  implements Observer<JamModel, String>  
         }
     }
 
+    /**
+     * creates the i9nitial main gridPane of the GUI
+     * @param model the model to base the initial state on
+     * @return the GridPane of buttons
+     */
     public GridPane makeMainGrid(JamModel model){
         GridPane grid = new GridPane();
         this.carMap = new HashMap<>();
@@ -141,6 +156,13 @@ public class JamGUI extends Application  implements Observer<JamModel, String>  
         return grid;
     }
 
+    /**
+     * update the GUI
+     * @param jamModel the object that wishes to inform this object
+     *                about something that has happened.
+     * @param msg optional data the server.model can send to the observer
+     *
+     */
     @Override
     public void update(JamModel jamModel, String msg) {
         if (initialized){
@@ -169,9 +191,5 @@ public class JamGUI extends Application  implements Observer<JamModel, String>  
 
     public static void main(String[] args) {
         Application.launch(args);
-    }
-
-    private void styleButton(Button b) {
-        b.setStyle("-fx-font: 14px Comic-Sans; -fx-border-style: solid inside;");
     }
 }

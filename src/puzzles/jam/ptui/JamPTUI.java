@@ -13,6 +13,10 @@ public class JamPTUI extends ConsoleApplication implements Observer<JamModel, St
     private PrintWriter out;
     private boolean initialized = false;
 
+    /**
+     * initialize the beginning of the application, creating model and adding the ui to the observer list.
+     * @throws Exception
+     */
     @Override
     public void init() throws Exception {
         this.initialized = false;
@@ -23,6 +27,13 @@ public class JamPTUI extends ConsoleApplication implements Observer<JamModel, St
         this.load(list.get(0));
     }
 
+    /**
+     * update the current display of teh model
+     * @param jamModel the object that wishes to inform this object
+     *                about something that has happened.
+     * @param msg optional data the server.model can send to the observer
+     *
+     */
     @Override
     public void update(JamModel jamModel, String msg) {
         System.out.println(msg);
@@ -33,6 +44,10 @@ public class JamPTUI extends ConsoleApplication implements Observer<JamModel, St
         }
     }
 
+    /**
+     * method to return the help string for use later
+     * @return the help string
+     */
     public String printHelp(){
         return ("""
                 h(int)              -- hint next move
@@ -42,6 +57,10 @@ public class JamPTUI extends ConsoleApplication implements Observer<JamModel, St
                 r(eset)             -- reset the current game""");
     }
 
+    /**
+     * main, used to launch the application.
+     * @param args String array containing the file name to open.
+     */
     public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Usage: java JamPTUI filename");
@@ -50,6 +69,12 @@ public class JamPTUI extends ConsoleApplication implements Observer<JamModel, St
         }
     }
 
+    /**
+     * Initialize the game, and set up commands
+     * @param console Where the UI should print output. It is recommended to save
+     *                this object in a field in the subclass.
+     * @throws Exception
+     */
     @Override
     public void start(PrintWriter console) throws Exception {
         this.out = console;
@@ -68,6 +93,10 @@ public class JamPTUI extends ConsoleApplication implements Observer<JamModel, St
         );
     }
 
+    /**
+     * load a new file
+     * @param filename
+     */
     public void load(String filename){
         File file = new File(filename);
         if (file != null){
@@ -75,6 +104,10 @@ public class JamPTUI extends ConsoleApplication implements Observer<JamModel, St
         }
     }
 
+    /**
+     * return the String representation of the current board
+     * @return the string
+     */
     public String printBoard(){
         StringBuilder string = new StringBuilder();
         string.append("  ");

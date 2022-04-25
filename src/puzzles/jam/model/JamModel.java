@@ -18,7 +18,7 @@ public class JamModel {
     private final List<Observer<JamModel, String>> observers = new LinkedList<>();
 
     /**
-     * the current configuration
+     * various variables to store the current state of the game, as well as the solver
      */
     private JamConfig currentConfig;
     private Solver solver = new Solver();
@@ -48,6 +48,10 @@ public class JamModel {
         }
     }
 
+    /**
+     * load a file
+     * @param fname the file to use to generate the config
+     */
     public void load(File fname) {
         currentConfig = new JamConfig(fname);
         if (currentConfig.getMainGrid() != null){
@@ -59,10 +63,19 @@ public class JamModel {
         }
     }
 
+    /**
+     * getter for the current config
+     * @return the current config
+     */
     public JamConfig getConfig() {
         return currentConfig;
     }
 
+    /**
+     * Select a cell in the grid, either to select the car to move or to select where to move
+     * @param row the row of the cell
+     * @param col the column to select
+     */
     public void select(int row, int col) {
         if (selection){
             selection = false;
@@ -93,6 +106,12 @@ public class JamModel {
         }
     }
 
+    /**
+     * chech the validity of a move
+     * @param row the row to move to
+     * @param col the column to move to
+     * @return boolean representing the validity of the proposed move
+     */
     public boolean checkMove(int row, int col){
         if (selectedCar.movesHorizontal() && row != selectedCar.getEndRow()){
             return false;
@@ -106,6 +125,9 @@ public class JamModel {
         return true;
     }
 
+    /**
+     * get a hint and update observers
+     */
     public void getHint() {
         refreshPath();
         boolean hintFound = false;
@@ -126,6 +148,9 @@ public class JamModel {
         }
     }
 
+    /**
+     * reset the currently loaded board
+     */
     public void reset(){
         File file = new File(filename);
         currentConfig = new JamConfig(file);
@@ -133,6 +158,9 @@ public class JamModel {
         alertObservers("Puzzle reset!");
     }
 
+    /**
+     * re-find the path from the current config to the solution
+     */
     private void refreshPath() {
         path = solver.findPath(currentConfig);
     }
