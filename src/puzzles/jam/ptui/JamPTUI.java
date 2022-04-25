@@ -78,17 +78,17 @@ public class JamPTUI extends ConsoleApplication implements Observer<JamModel, St
     public String printBoard(){
         StringBuilder string = new StringBuilder();
         string.append("  ");
-        for (int i = 0; i < JamConfig.getNumCols(); i++) {
+        for (int i = 0; i < this.model.getConfig().getNumCols(); i++) {
             string.append(i).append(" ");
         }
         string.append("\n  ");
-        for (int i = 0; i < JamConfig.getNumCols(); i++) {
+        for (int i = 0; i < this.model.getConfig().getNumCols(); i++) {
             string.append("__");
         }
         string.append("\n");
-        for (int i = 0; i < JamConfig.getNumRows(); i++) {
+        for (int i = 0; i < this.model.getConfig().getNumRows(); i++) {
             string.append(i).append("|");
-            for (int j = 0; j < JamConfig.getNumCols(); j++) {
+            for (int j = 0; j < this.model.getConfig().getNumCols(); j++) {
                 string.append(model.getConfig().getAt(i, j)).append(" ");
             }
             string.append("\n");

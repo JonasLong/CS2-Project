@@ -12,15 +12,15 @@ public class JamConfig implements Configuration{
 
     private Character[][] mainGrid;
     private HashMap<Character, Car> carList;
-    private static int numRows;
-    private static int numCols;
+    private int numRows;
+    private int numCols;
 
     public JamConfig(File filename){
         try (BufferedReader br = new BufferedReader(new FileReader(filename))){
             carList = new HashMap<>();
             String[] line = br.readLine().split(" ");
-            numRows = Integer.parseInt(line[0]);
-            numCols = Integer.parseInt(line[1]);
+            this.numRows = Integer.parseInt(line[0]);
+            this.numCols = Integer.parseInt(line[1]);
             mainGrid = new Character[numRows][numCols];
             for (int i = 0; i < numRows; i++) {
                 for (int j = 0; j < numCols; j++) {
@@ -53,7 +53,9 @@ public class JamConfig implements Configuration{
     }
 
     public JamConfig(JamConfig other, Character name, boolean forward){
-        this.mainGrid = new Character[numRows][numCols];
+        this.numCols = other.numCols;
+        this.numRows = other.numRows;
+        this.mainGrid = new Character[this.numRows][this.numCols];
         this.carList = new HashMap<>();
         for (int i = 0; i < numRows; i++) {
             if (numCols >= 0) System.arraycopy(other.mainGrid[i], 0, this.mainGrid[i], 0, numCols);
@@ -159,11 +161,11 @@ public class JamConfig implements Configuration{
         return Arrays.deepHashCode(mainGrid);
     }
 
-    public static int getNumCols() {
+    public int getNumCols() {
         return numCols;
     }
 
-    public static int getNumRows() {
+    public int getNumRows() {
         return numRows;
     }
 
